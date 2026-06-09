@@ -49,8 +49,21 @@ npm run crawl:seek -- --keywords="software engineer" --where="Sydney NSW" --coun
 
 ### If direct SEEK fetching is blocked
 
-Do not try to bypass SEEK anti-bot controls with stealth browsers, rotating proxies, or CAPTCHA evasion.
-Instead, configure a compliant fallback provider:
+Do not try to bypass SEEK anti-bot controls with stealth browsers, rotating proxies, CAPTCHA evasion,
+or other techniques intended to defeat access controls. Those approaches are brittle and may violate
+site terms. Use one of these safer alternatives instead:
+
+1. **SerpApi / Google Jobs fallback (implemented)** — configure `SERPAPI_KEY` and use
+   `provider=serpapi` or leave `provider=auto` so Jobify tries direct SEEK parsing first and then
+   falls back to SerpApi if direct fetching fails.
+2. **Official or partner data access** — if the deployment is commercial or high-volume, request
+   permission or API/data-feed access from SEEK or an approved data provider. This is the most
+   reliable option when you need guaranteed coverage.
+3. **User-supplied imports** — let users paste job details, paste SEEK URLs, or upload data they
+   already have access to from alerts/spreadsheets. This avoids server-side crawling entirely and
+   keeps the existing Jobify create-job flow as the source of truth.
+4. **Search-provider APIs** — use APIs that are designed for automated access, then filter results
+   to SEEK links before importing. SerpApi is the provider currently wired into this codebase.
 
 ```bash
 export SERPAPI_KEY="your-serpapi-key"
