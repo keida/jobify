@@ -4,6 +4,7 @@ import { BadRequestError, UnAuthenticatedError } from '../errors/index.js';
 import checkPermissions from '../utils/checkPermissions.js';
 import mongoose from 'mongoose';
 import moment from 'moment';
+import { scrapeSeekJobs } from '../services/seekScraper.js';
 
 const createJob = async (req, res) => {
   const { position, company } = req.body;
@@ -102,6 +103,77 @@ const updateJob = async (req, res) => {
   // await job.save();
   // res.status(StatusCodes.OK).json({ job });
 };
+
+const importSeekJobs = async (req, res) => {
+  const {
+    keywords = '',
+    where = '',
+    country = 'au',
+    provider = 'auto',
+    pages: rawPages,
+    limit: rawLimit,
+  } = req.body || {};
+  const pages = Number(rawPages) || 1;
+  const limit = Number(rawLimit) || 20;
+
+  if (!keywords && !where) {
+    throw new BadRequestError('Please provide keywords or where for the SEEK search');
+  }
+
+  const { jobs: seekJobs, fetchedUrls, provider: usedProvider, directError } = await scrapeSeekJobs({
+    keywords,
+    where,
+    country,
+    provider,
+    pages,
+    limit,
+  });
+
+  const importedJobs = [];
+  const duplicateJobs = [];
+
+  for (const seekJob of seekJobs) {
+    const listedAt = seekJob.listedAt ? new Date(seekJob.listedAt) : undefined;
+    const jobToCreate = {
+      company: seekJob.company,
+      position: seekJob.position,
+      jobLocation: seekJob.jobLocation,
+      jobType: seekJob.jobType,
+      status: 'pending',
+      source: 'seek',
+      sourceUrl: seekJob.sourceUrl,
+      externalId: seekJob.externalId || seekJob.sourceUrl,
+      salary: seekJob.salary,
+      createdBy: req.user.userId,
+    };
+
+    if (listedAt && !Number.isNaN(listedAt.getTime())) {
+      jobToCreate.listedAt = listedAt;
+    }
+
+    try {
+      const job = await Job.create(jobToCreate);
+      importedJobs.push(job);
+    } catch (error) {
+      if (error.code === 11000) {
+        duplicateJobs.push(seekJob);
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  res.status(StatusCodes.CREATED).json({
+    jobs: importedJobs,
+    importedJobs: importedJobs.length,
+    duplicateJobs: duplicateJobs.length,
+    fetchedJobs: seekJobs.length,
+    fetchedUrls,
+    provider: usedProvider,
+    directError,
+  });
+};
+
 const showStats = async (req, res) => {
   let stats = await Job.aggregate([
     { $match: { createdBy: mongoose.Types.ObjectId(req.user.userId) } },
@@ -144,4 +216,4 @@ const showStats = async (req, res) => {
   res.status(StatusCodes.OK).json({ defaultStats, monthlyApplications });
 };
 
-export { createJob, deleteJob, getAllJobs, updateJob, showStats };
+export { createJob, deleteJob, getAllJobs, updateJob, importSeekJobs, showStats };

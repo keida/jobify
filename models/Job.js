@@ -32,8 +32,33 @@ const JobSchema = new mongoose.Schema(
       ref: 'User',
       required: [true, 'Please provide user'],
     },
+    source: {
+      type: String,
+      enum: ['manual', 'seek'],
+      default: 'manual',
+    },
+    sourceUrl: {
+      type: String,
+      maxlength: 500,
+    },
+    externalId: {
+      type: String,
+      maxlength: 200,
+    },
+    salary: {
+      type: String,
+      maxlength: 120,
+    },
+    listedAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 )
+
+JobSchema.index(
+  { createdBy: 1, source: 1, externalId: 1 },
+  { unique: true, partialFilterExpression: { source: 'seek', externalId: { $exists: true } } }
+);
 
 export default mongoose.model('Job', JobSchema)
