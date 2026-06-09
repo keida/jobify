@@ -1,7 +1,7 @@
 {
-  "name": "jobify",
+  "name": "insight-reports-dashboard",
   "version": "1.0.0",
-  "description": "Project in Action - Jobify",
+  "description": "MERN dashboard for creating and tracking team data reports",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -12,8 +12,7 @@
     "heroku-postbuild": "npm run install-client && npm run build-client",
     "server": "nodemon server --ignore client",
     "client": "npm start --prefix client",
-    "start": "concurrently --kill-others-on-fail \" npm run server\" \" npm run client\"",
-    "crawl:seek": "node scripts/crawlSeek.js"
+    "start": "concurrently --kill-others-on-fail \" npm run server\" \" npm run client\""
   },
   "keywords": [],
   "author": "",

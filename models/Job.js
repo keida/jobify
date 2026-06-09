@@ -4,27 +4,27 @@ const JobSchema = new mongoose.Schema(
   {
     company: {
       type: String,
-      required: [true, 'Please provide company'],
+      required: [true, 'Please provide data source'],
       maxlength: 50,
     },
     position: {
       type: String,
-      required: [true, 'Please provide position'],
+      required: [true, 'Please provide report title'],
       maxlength: 100,
     },
     status: {
       type: String,
-      enum: ['interview', 'declined', 'pending'],
-      default: 'pending',
+      enum: ['draft', 'review', 'published'],
+      default: 'draft',
     },
     jobType: {
       type: String,
-      enum: ['full-time', 'part-time', 'remote', 'internship'],
-      default: 'full-time',
+      enum: ['sales', 'marketing', 'finance', 'operations'],
+      default: 'sales',
     },
     jobLocation: {
       type: String,
-      default: 'my city',
+      default: 'executive team',
       required: true,
     },
     createdBy: {
@@ -32,33 +32,8 @@ const JobSchema = new mongoose.Schema(
       ref: 'User',
       required: [true, 'Please provide user'],
     },
-    source: {
-      type: String,
-      enum: ['manual', 'seek'],
-      default: 'manual',
-    },
-    sourceUrl: {
-      type: String,
-      maxlength: 500,
-    },
-    externalId: {
-      type: String,
-      maxlength: 200,
-    },
-    salary: {
-      type: String,
-      maxlength: 120,
-    },
-    listedAt: {
-      type: Date,
-    },
   },
   { timestamps: true }
 )
-
-JobSchema.index(
-  { createdBy: 1, source: 1, externalId: 1 },
-  { unique: true, partialFilterExpression: { source: 'seek', externalId: { $exists: true } } }
-);
 
 export default mongoose.model('Job', JobSchema)
