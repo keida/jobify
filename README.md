@@ -73,5 +73,25 @@ npm run crawl:seek -- --keywords="software engineer" --where="Sydney NSW" --prov
 The SerpApi fallback uses the Google Jobs API and only imports results that appear to be SEEK postings
 (for example, `via` says SEEK or an apply/related link points to seek.com.au or seek.co.nz).
 
+#### What is `SERPAPI_KEY`?
+
+`SERPAPI_KEY` is the private API key for your SerpApi account. Jobify reads it from the server
+environment when `provider=serpapi` or when `provider=auto` needs to fall back after direct SEEK
+fetching fails. Keep this key on the server only; do not commit it to git or expose it in React client
+code.
+
+Local development example:
+
+```bash
+# .env
+SERPAPI_KEY=your-serpapi-key
+```
+
+One-off CLI example:
+
+```bash
+SERPAPI_KEY=your-serpapi-key npm run crawl:seek -- --keywords="software engineer" --where="Sydney NSW" --provider=serpapi
+```
+
 Please use conservative `pages` and `limit` values and make sure your usage complies with SEEK's,
 SerpApi's, and Google Jobs' current terms and robots guidance.
