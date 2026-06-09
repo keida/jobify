@@ -1,1 +1,116 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="Web site created using create-react-app"/><link rel="apple-touch-icon" href="/logo192.png"/><link rel="manifest" href="/manifest.json"/><title>JOb App</title><script defer="defer" src="/static/js/main.4bfcf74f.js"></script><link href="/static/css/main.41f40706.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta
+      name="description"
+      content="Insight Reports Dashboard - create and track data reports from this repo without installing the React client."
+    />
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="/static/css/reports.css" />
+    <title>Insight Reports Dashboard</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero-panel">
+        <div>
+          <p class="eyebrow">Repo runnable demo</p>
+          <h1>Insight Reports Dashboard</h1>
+          <p class="hero-copy">
+            Create the data reports your team needs, move them through draft, review, and published stages,
+            and see the dashboard update instantly. This static demo runs directly from Express and stores
+            sample data in your browser.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <a class="button secondary" href="#reports">View reports</a>
+          <a class="button" href="#create-report">Create report</a>
+        </div>
+      </section>
+
+      <section class="stats-grid" aria-label="Report status summary">
+        <article class="stat-card draft-card">
+          <span>Draft</span>
+          <strong id="draftCount">0</strong>
+          <small>Reports being shaped</small>
+        </article>
+        <article class="stat-card review-card">
+          <span>In review</span>
+          <strong id="reviewCount">0</strong>
+          <small>Reports awaiting sign-off</small>
+        </article>
+        <article class="stat-card published-card">
+          <span>Published</span>
+          <strong id="publishedCount">0</strong>
+          <small>Reports ready for teams</small>
+        </article>
+        <article class="stat-card total-card">
+          <span>Total</span>
+          <strong id="totalCount">0</strong>
+          <small>Tracked reports</small>
+        </article>
+      </section>
+
+      <section class="workspace" id="create-report">
+        <form id="reportForm" class="panel form-panel">
+          <div class="section-heading">
+            <p class="eyebrow">Create / update</p>
+            <h2 id="formTitle">Create report</h2>
+          </div>
+          <input type="hidden" id="reportId" />
+          <label>
+            Report title
+            <input id="title" type="text" placeholder="Weekly revenue dashboard" required />
+          </label>
+          <label>
+            Data source
+            <input id="source" type="text" placeholder="CRM, warehouse, ads platform..." required />
+          </label>
+          <label>
+            Audience
+            <input id="audience" type="text" placeholder="Executive team" required />
+          </label>
+          <div class="form-row">
+            <label>
+              Category
+              <select id="category">
+                <option>sales</option>
+                <option>marketing</option>
+                <option>finance</option>
+                <option>operations</option>
+              </select>
+            </label>
+            <label>
+              Status
+              <select id="status">
+                <option>draft</option>
+                <option>review</option>
+                <option>published</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-actions">
+            <button class="button" type="submit">Save report</button>
+            <button class="button ghost" type="button" id="resetForm">Clear</button>
+          </div>
+        </form>
+
+        <section class="panel reports-panel" id="reports">
+          <div class="section-heading reports-heading">
+            <div>
+              <p class="eyebrow">Report library</p>
+              <h2>All reports</h2>
+            </div>
+            <input id="search" class="search" type="search" placeholder="Search by title, source, audience..." />
+          </div>
+          <div id="reportsList" class="reports-list" aria-live="polite"></div>
+        </section>
+      </section>
+    </main>
+    <script src="/static/js/reports.js"></script>
+  </body>
+</html>

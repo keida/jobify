@@ -22,8 +22,9 @@ Each report record includes:
 ## Development
 
 ```bash
-npm run install-dependencies
 npm start
 ```
 
-The server expects the normal project environment variables such as `MONGO_URL`, `JWT_SECRET`, and `JWT_LIFETIME`.
+Then open `http://localhost:5000`. The checked-in static dashboard runs without rebuilding the React client and stores demo reports in browser localStorage.
+
+For authenticated API and MongoDB-backed report data, set `MONGO_URL`, `JWT_SECRET`, and `JWT_LIFETIME` before starting the server. To work on the original React client source, install client dependencies and run `npm run dev`.
