@@ -1,7 +1,7 @@
 {
-  "name": "jobify",
+  "name": "excel-analytics-studio",
   "version": "1.0.0",
-  "description": "Project in Action - Jobify",
+  "description": "Repo-runnable dashboard for uploading multiple Excel files and generating data analysis summaries",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -12,7 +12,9 @@
     "heroku-postbuild": "npm run install-client && npm run build-client",
     "server": "nodemon server --ignore client",
     "client": "npm start --prefix client",
-    "start": "concurrently --kill-others-on-fail \" npm run server\" \" npm run client\""
+    "start": "node server.js",
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
+    "preview:screenshot": "node scripts/generatePreview.js"
   },
   "keywords": [],
   "author": "",

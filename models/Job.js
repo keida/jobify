@@ -4,27 +4,27 @@ const JobSchema = new mongoose.Schema(
   {
     company: {
       type: String,
-      required: [true, 'Please provide company'],
+      required: [true, 'Please provide data source'],
       maxlength: 50,
     },
     position: {
       type: String,
-      required: [true, 'Please provide position'],
+      required: [true, 'Please provide report title'],
       maxlength: 100,
     },
     status: {
       type: String,
-      enum: ['interview', 'declined', 'pending'],
-      default: 'pending',
+      enum: ['draft', 'review', 'published'],
+      default: 'draft',
     },
     jobType: {
       type: String,
-      enum: ['full-time', 'part-time', 'remote', 'internship'],
-      default: 'full-time',
+      enum: ['sales', 'marketing', 'finance', 'operations'],
+      default: 'sales',
     },
     jobLocation: {
       type: String,
-      default: 'my city',
+      default: 'executive team',
       required: true,
     },
     createdBy: {

@@ -1,1 +1,156 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="Web site created using create-react-app"/><link rel="apple-touch-icon" href="/logo192.png"/><link rel="manifest" href="/manifest.json"/><title>JOb App</title><script defer="defer" src="/static/js/main.4bfcf74f.js"></script><link href="/static/css/main.41f40706.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#0f766e" />
+    <meta
+      name="description"
+      content="Excel Analytics Studio - upload multiple Excel or CSV files, clean data, and generate dashboard-ready analysis reports from this repo."
+    />
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="/static/css/reports.css" />
+    <title>Excel Analytics Studio</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero-panel">
+        <div>
+          <p class="eyebrow">Step-by-step data analysis workflow</p>
+          <h1>Excel Analytics Studio</h1>
+          <p class="hero-copy">
+            Upload multiple Excel or CSV files, collect and store the datasets in your browser, process and clean the rows,
+            then generate analysis summaries based on the questions you describe. This repo-runnable version is the first
+            working page for the larger data-report product.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <a class="button secondary" href="#upload">Upload files</a>
+          <a class="button" href="#analysis">View analysis</a>
+        </div>
+      </section>
+
+      <section class="pipeline" aria-label="Data analysis pipeline">
+        <article class="pipeline-step active">
+          <span>01</span>
+          <strong>数据收集</strong>
+          <small>Upload multiple Excel/CSV files</small>
+        </article>
+        <article class="pipeline-step">
+          <span>02</span>
+          <strong>数据存储</strong>
+          <small>Save parsed datasets locally</small>
+        </article>
+        <article class="pipeline-step">
+          <span>03</span>
+          <strong>数据处理</strong>
+          <small>Merge rows and infer columns</small>
+        </article>
+        <article class="pipeline-step">
+          <span>04</span>
+          <strong>数据清洗</strong>
+          <small>Trim blanks, missing values, duplicates</small>
+        </article>
+        <article class="pipeline-step">
+          <span>05</span>
+          <strong>数据分析</strong>
+          <small>Metrics, categories, recommendations</small>
+        </article>
+      </section>
+
+      <section class="stats-grid" aria-label="Dataset summary">
+        <article class="stat-card files-card">
+          <span>Files</span>
+          <strong id="fileCount">0</strong>
+          <small>Uploaded workbooks / CSVs</small>
+        </article>
+        <article class="stat-card rows-card">
+          <span>Rows</span>
+          <strong id="rowCount">0</strong>
+          <small>Clean data rows</small>
+        </article>
+        <article class="stat-card columns-card">
+          <span>Columns</span>
+          <strong id="columnCount">0</strong>
+          <small>Detected fields</small>
+        </article>
+        <article class="stat-card quality-card">
+          <span>Quality</span>
+          <strong id="qualityScore">0%</strong>
+          <small>Completeness score</small>
+        </article>
+      </section>
+
+      <section class="workspace" id="upload">
+        <form id="uploadForm" class="panel upload-panel">
+          <div class="section-heading">
+            <p class="eyebrow">Data collection</p>
+            <h2>Upload multiple files</h2>
+            <p>
+              Select one or more <strong>.xlsx</strong>, <strong>.csv</strong>, or <strong>.tsv</strong> files. The demo parses
+              them in the browser and stores the result in localStorage so it can run inside the repo without a database.
+            </p>
+          </div>
+
+          <label class="file-drop" for="fileInput">
+            <input id="fileInput" type="file" multiple accept=".xlsx,.csv,.tsv,.txt" />
+            <span>Drop files here or click to browse</span>
+            <small>Use CSV/TSV for the most reliable offline parsing; XLSX works for standard worksheet values.</small>
+          </label>
+
+          <label>
+            Analysis requirement
+            <textarea
+              id="analysisPrompt"
+              rows="5"
+              placeholder="Example: Analyze monthly sales by region, find missing data, top products, unusual values, and summary recommendations."
+            ></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button class="button" type="submit">Analyze uploaded data</button>
+            <button class="button ghost" type="button" id="loadSample">Load sample data</button>
+            <button class="button ghost" type="button" id="autoClean">Auto clean useless data</button>
+            <button class="button secondary" type="button" id="exportCsv">Export clean CSV</button>
+            <button class="button danger" type="button" id="clearData">Clear stored data</button>
+          </div>
+          <div id="statusLog" class="status-log" aria-live="polite"></div>
+        </form>
+
+        <section class="panel analysis-panel" id="analysis">
+          <div class="section-heading reports-heading">
+            <div>
+              <p class="eyebrow">Data analysis</p>
+              <h2>Generated dashboard</h2>
+            </div>
+            <input id="search" class="search" type="search" placeholder="Search columns, files, values..." />
+          </div>
+
+          <div class="agent-note">
+            <strong>Agent mode:</strong> The page currently uses deterministic cleaning and analysis rules. An AI agent is optional; it becomes useful when you want natural-language requests like “compare sales by region and explain risks” to choose columns, build charts, and write the final report automatically.
+          </div>
+          <div id="analysisSummary" class="analysis-summary"></div>
+          <div class="library-heading">
+            <div>
+              <p class="eyebrow">Data storage / recall</p>
+              <h3>Stored datasets</h3>
+            </div>
+            <small>Use / hide datasets to call stored data into the current analysis.</small>
+          </div>
+          <div id="datasetsList" class="datasets-list"></div>
+          <div class="library-heading">
+            <div>
+              <p class="eyebrow">Cleaned data model</p>
+              <h3>Available columns</h3>
+            </div>
+            <small>Remove useless columns before generating the final answer.</small>
+          </div>
+          <div id="columnsList" class="reports-list"></div>
+        </section>
+      </section>
+    </main>
+    <script src="/static/js/reports.js"></script>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { FaLocationArrow, FaBriefcase, FaCalendarAlt } from 'react-icons/fa';
+import { FaUsers, FaDatabase, FaCalendarAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/appContext';
 import Wrapper from '../assets/wrappers/Job';
@@ -20,13 +20,13 @@ const Job = ({ _id, position, company, jobLocation, jobType, createdAt, status }
       </header>
       <div className="content">
         <div className="content-center">
-          <JobInfo icon={<FaLocationArrow />} text={jobLocation} />
+          <JobInfo icon={<FaUsers />} text={jobLocation} />
           <JobInfo icon={<FaCalendarAlt />} text={date} />
-          <JobInfo icon={<FaBriefcase />} text={jobType} />
+          <JobInfo icon={<FaDatabase />} text={jobType} />
           <div className={`status ${status}`}>{status}</div>
         </div>
         <div className="actions">
-          <Link to="/add-job" className="btn edit-btn" onClick={() => setEditJob(_id)}>
+          <Link to="/create-report" className="btn edit-btn" onClick={() => setEditJob(_id)}>
             Edit
           </Link>
           <button type="button" className="btn delete-btn" onClick={() => deleteJob(_id)}>

@@ -1,6 +1,6 @@
 import Job from '../models/Job.js';
 import { StatusCodes } from 'http-status-codes';
-import { BadRequestError, UnAuthenticatedError } from '../errors/index.js';
+import { BadRequestError, NotFoundError } from '../errors/index.js';
 import checkPermissions from '../utils/checkPermissions.js';
 import mongoose from 'mongoose';
 import moment from 'moment';
@@ -8,7 +8,7 @@ import moment from 'moment';
 const createJob = async (req, res) => {
   const { position, company } = req.body;
   if (!position || !company) {
-    throw new BadRequestError('Please provide all values');
+    throw new BadRequestError('Please provide all report values');
   }
   req.body.createdBy = req.user.userId;
   const job = await Job.create(req.body);
@@ -16,18 +16,14 @@ const createJob = async (req, res) => {
 };
 const deleteJob = async (req, res) => {
   const { id: jobId } = req.params;
-  // const job = await Job.deleteOne({ _id: jobId });
-  // if (!job) throw new NotFoundError(`No job with id ${jobId}`);
-
-  // res.status(StatusCodes.OK).json({ msg: 'Success! Job removed' });
   const job = await Job.findOne({ _id: jobId });
 
   if (!job) {
-    throw new CustomError.NotFoundError(`No job with id : ${jobId}`);
+    throw new NotFoundError(`No report with id : ${jobId}`);
   }
   checkPermissions(req.user, job.createdBy);
   await job.remove();
-  res.status(StatusCodes.OK).json({ msg: 'Success! Job removed' });
+  res.status(StatusCodes.OK).json({ msg: 'Success! Report removed' });
 };
 const getAllJobs = async (req, res) => {
   const { status, jobType, sort, search } = req.query;
@@ -78,18 +74,17 @@ const getAllJobs = async (req, res) => {
 
   const totalJobs = await Job.countDocuments(queryObject);
   const numOfPages = Math.ceil(totalJobs / limit);
-  console.log(req.query.limit,req.query.page);
   res.status(StatusCodes.OK).json({ jobs, totalJobs, numOfPages });
 };
 const updateJob = async (req, res) => {
   const { id: jobId } = req.params;
   const { company, position } = req.body;
   if (!company || !position) {
-    throw new BadRequestError('Please Provide All Values');
+    throw new BadRequestError('Please provide all report values');
   }
   const job = await Job.findOne({ _id: jobId });
   if (!job) {
-    throw new NotFoundError(`No job with id ${jobId}`);
+    throw new NotFoundError(`No report with id ${jobId}`);
   }
   checkPermissions(req.user, job.createdBy);
   const updateJob = await Job.findOneAndUpdate({ _id: jobId }, req.body, {
@@ -97,10 +92,6 @@ const updateJob = async (req, res) => {
     runValidators: true,
   });
   res.status(StatusCodes.OK).json({ updateJob });
-  // job.position = position;
-  // job.company = company;
-  // await job.save();
-  // res.status(StatusCodes.OK).json({ job });
 };
 const showStats = async (req, res) => {
   let stats = await Job.aggregate([
@@ -113,11 +104,11 @@ const showStats = async (req, res) => {
     return acc;
   }, {});
   const defaultStats = {
-    pending: stats.pending || 0,
-    interview: stats.interview || 0,
-    declined: stats.declined || 0,
+    draft: stats.draft || 0,
+    review: stats.review || 0,
+    published: stats.published || 0,
   };
-  let monthlyApplications = await Job.aggregate([
+  let monthlyReports = await Job.aggregate([
     { $match: { createdBy: mongoose.Types.ObjectId(req.user.userId) } },
     {
       $group: {
@@ -128,7 +119,7 @@ const showStats = async (req, res) => {
     { $sort: { '_id.year': 1, '_id.month': 1 } },
     { $limit: 6 },
   ]);
-  monthlyApplications = monthlyApplications
+  monthlyReports = monthlyReports
     .map(item => {
       const {
         _id: { year, month },
@@ -141,7 +132,7 @@ const showStats = async (req, res) => {
       return { date, count };
     })
     .reverse();
-  res.status(StatusCodes.OK).json({ defaultStats, monthlyApplications });
+  res.status(StatusCodes.OK).json({ defaultStats, monthlyReports });
 };
 
 export { createJob, deleteJob, getAllJobs, updateJob, showStats };

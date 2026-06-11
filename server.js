@@ -55,6 +55,11 @@ app.listen(port, () => {
 });
 
 const start = async () => {
+  if (!process.env.MONGO_URL) {
+    console.log('MONGO_URL is not set; running static dashboard without database connection.');
+    return;
+  }
+
   try {
     await connectDB(process.env.MONGO_URL);
   } catch (error) {

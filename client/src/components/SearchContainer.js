@@ -26,12 +26,12 @@ const SearchContainer = () => {
   return (
     <Wrapper>
       <form className="form">
-        <h4>search Form</h4>
+        <h4>report search</h4>
         <div className="form-center">
-          <FormRow type="text" name="search" value={search} handleChange={handleSearch} />
+          <FormRow type="text" name="search" labelText="report title" value={search} handleChange={handleSearch} />
           {/* search by status */}
           <FormRowSelect
-            labelText="job status"
+            labelText="report status"
             name="searchStatus"
             value={searchStatus}
             handleChange={handleSearch}
@@ -40,7 +40,7 @@ const SearchContainer = () => {
           {/* search by type */}
 
           <FormRowSelect
-            labelText="job type"
+            labelText="report category"
             name="searchType"
             value={searchType}
             handleChange={handleSearch}

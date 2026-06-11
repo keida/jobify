@@ -111,8 +111,8 @@ const reducer = (state, action) => {
       isLoading: false,
       token: action.payload.token,
       user: action.payload.user,
-      userLocation: action.payload.userLocation,
-      jobLocation: action.payload.jobLocation,
+      userLocation: action.payload.location,
+      jobLocation: 'executive team',
       showAlert: true,
       alertType: 'success',
       alertText: action.payload.alertText,
@@ -138,7 +138,7 @@ const reducer = (state, action) => {
       ...state,
       user: null,
       token: null,
-      jobLocation: '',
+      jobLocation: 'executive team',
       userLocation: '',
     };
   }
@@ -151,8 +151,8 @@ const reducer = (state, action) => {
       isLoading: false,
       token: action.payload.token,
       user: action.payload.user,
-      userLocation: action.payload.userLocation,
-      jobLocation: action.payload.jobLocation,
+      userLocation: action.payload.location,
+      jobLocation: 'executive team',
       showAlert: true,
       alertType: 'success',
       alertText: 'User Profile Updated!',
@@ -180,9 +180,9 @@ const reducer = (state, action) => {
       editJobId: '',
       position: '',
       company: '',
-      jobLocation: state.userLocation,
-      jobType: 'full-time',
-      status: 'pending',
+      jobLocation: 'executive team',
+      jobType: 'sales',
+      status: 'draft',
     };
     return {
       ...state,
@@ -198,7 +198,7 @@ const reducer = (state, action) => {
       isLoading: false,
       showAlert: true,
       alertType: 'success',
-      alertText: 'New Job Created!',
+      alertText: 'New Report Created!',
     };
   }
   if (action.type === CREATE_JOB_ERROR) {
@@ -245,7 +245,7 @@ const reducer = (state, action) => {
       isLoading: false,
       showAlert: true,
       alertType: 'success',
-      alertText: 'Job Deleted',
+      alertText: 'Report Deleted',
     };
   }
   if (action.type === DELETE_JOB_ERROR) {
@@ -266,7 +266,7 @@ const reducer = (state, action) => {
       isLoading: false,
       showAlert: true,
       alertType: 'success',
-      alertText: 'Job Updated!',
+      alertText: 'Report Updated!',
     };
   }
   if (action.type === EDIT_JOB_ERROR) {
@@ -286,7 +286,7 @@ const reducer = (state, action) => {
       ...state,
       isLoading: false,
       stats: action.payload.stats,
-      monthlyApplications: action.payload.monthlyApplications,
+      monthlyReports: action.payload.monthlyReports,
     };
   }
   if (action.type === CLEAR_FILTERS) {

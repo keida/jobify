@@ -41,36 +41,40 @@ const AddJob = () => {
   return (
     <Wrapper>
       <form className="from">
-        <h3>{isEditing ? 'edit job' : 'add job'}</h3>
+        <h3>{isEditing ? 'edit report' : 'create report'}</h3>
         {showAlert && <Alert />}
         <div className="form-center">
           <FormRow
             type="text"
             name="company"
+            labelText="data source"
             value={company}
             handleChange={handleJobInput}
           />
           <FormRow
             type="text"
             name="position"
+            labelText="report title"
             value={position}
             handleChange={handleJobInput}
           />
           <FormRow
             type="text"
             name="jobLocation"
+            labelText="audience"
             value={jobLocation}
             handleChange={handleJobInput}
           />
           <FormRowSelect
             name="status"
+            labelText="report status"
             value={status}
             handleChange={handleJobInput}
             list={statusOptions}
           />
           <FormRowSelect
             name="jobType"
-            labelText="job type"
+            labelText="report category"
             value={jobType}
             handleChange={handleJobInput}
             list={jobTypeOptions}

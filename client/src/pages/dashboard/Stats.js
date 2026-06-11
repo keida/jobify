@@ -3,7 +3,7 @@ import { useAppContext } from '../../context/appContext';
 import { StatsContainer, Loading, ChartsContainer } from '../../components';
 
 const Stats = () => {
-  const { showStats, isLoading, monthlyApplications } = useAppContext();
+  const { showStats, isLoading, monthlyReports } = useAppContext();
   useEffect(() => {
     showStats();
     // eslint-disable-next-line
@@ -14,7 +14,7 @@ const Stats = () => {
   return (
     <>
       <StatsContainer />
-      {monthlyApplications.length > 0 && <ChartsContainer />}
+      {monthlyReports.length > 0 && <ChartsContainer />}
     </>
   );
 };
