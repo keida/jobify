@@ -18,12 +18,16 @@ const sampleDatasets = [
   },
 ];
 
-let datasets = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || [];
+const storedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+let datasets = Array.isArray(storedState) ? storedState : storedState?.datasets || [];
+let activeDatasetIds = Array.isArray(storedState?.activeDatasetIds) ? storedState.activeDatasetIds : datasets.map(dataset => dataset.id);
 
 const uploadForm = document.querySelector('#uploadForm');
 const fileInput = document.querySelector('#fileInput');
 const promptInput = document.querySelector('#analysisPrompt');
 const loadSampleButton = document.querySelector('#loadSample');
+const autoCleanButton = document.querySelector('#autoClean');
+const exportCsvButton = document.querySelector('#exportCsv');
 const clearDataButton = document.querySelector('#clearData');
 const statusLog = document.querySelector('#statusLog');
 const searchInput = document.querySelector('#search');
@@ -31,7 +35,15 @@ const analysisSummary = document.querySelector('#analysisSummary');
 const datasetsList = document.querySelector('#datasetsList');
 const columnsList = document.querySelector('#columnsList');
 
-const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(datasets));
+const save = () => {
+  const activeIds = new Set(activeDatasetIds);
+  activeDatasetIds = datasets.filter(dataset => activeIds.has(dataset.id)).map(dataset => dataset.id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ datasets, activeDatasetIds }));
+};
+const getActiveDatasets = () => {
+  const activeIds = new Set(activeDatasetIds);
+  return datasets.filter(dataset => activeIds.has(dataset.id));
+};
 const normalize = value => String(value ?? '').trim().toLowerCase();
 const isBlank = value => normalize(value) === '';
 const escapeHtml = value =>
@@ -53,7 +65,7 @@ const log = (message, type = 'ok') => {
 };
 
 const updateCounters = analysis => {
-  document.querySelector('#fileCount').textContent = datasets.length;
+  document.querySelector('#fileCount').textContent = `${getActiveDatasets().length}/${datasets.length}`;
   document.querySelector('#rowCount').textContent = analysis.cleanRows.length;
   document.querySelector('#columnCount').textContent = analysis.headers.length;
   document.querySelector('#qualityScore').textContent = `${analysis.qualityScore}%`;
@@ -249,8 +261,9 @@ const parseFile = file => {
 };
 
 const buildAnalysis = () => {
-  const headers = [...new Set(datasets.flatMap(dataset => dataset.headers))];
-  const combinedRows = datasets.flatMap(dataset =>
+  const selectedDatasets = getActiveDatasets();
+  const headers = [...new Set(selectedDatasets.flatMap(dataset => dataset.headers))];
+  const combinedRows = selectedDatasets.flatMap(dataset =>
     dataset.rows.map(row => {
       const record = { __file: dataset.name, __sheet: dataset.sheet };
       dataset.headers.forEach((header, index) => {
@@ -321,6 +334,74 @@ const analyzeColumn = (header, rows) => {
 
 const formatNumber = value => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(value || 0);
 
+const removeDuplicateDatasetRows = dataset => {
+  const seen = new Set();
+  const rows = dataset.rows.filter(row => {
+    const key = row.map(normalize).join('|');
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return { ...dataset, rows };
+};
+
+const dropColumnFromDataset = (dataset, header) => {
+  const index = dataset.headers.indexOf(header);
+  if (index < 0) return dataset;
+  return {
+    ...dataset,
+    headers: dataset.headers.filter((_, headerIndex) => headerIndex !== index),
+    rows: dataset.rows.map(row => row.filter((_, cellIndex) => cellIndex !== index)),
+  };
+};
+
+const autoCleanDatasets = () => {
+  const analysis = buildAnalysis();
+  const activeIds = new Set(activeDatasetIds);
+  const rowCount = Math.max(analysis.cleanRows.length, 1);
+  const uselessColumns = analysis.columns
+    .filter(column => column.filled === 0 || column.missing / rowCount >= 0.6 || /^unnamed\s*:?\s*\d*$/i.test(column.header))
+    .map(column => column.header);
+
+  let removedColumns = 0;
+  let removedRows = 0;
+  datasets = datasets.map(dataset => {
+    if (!activeIds.has(dataset.id)) return dataset;
+    const beforeRows = dataset.rows.length;
+    const beforeColumns = dataset.headers.length;
+    const cleaned = uselessColumns.reduce((current, header) => dropColumnFromDataset(current, header), dataset);
+    const deduped = removeDuplicateDatasetRows(cleaned);
+    removedRows += beforeRows - deduped.rows.length;
+    removedColumns += beforeColumns - deduped.headers.length;
+    return deduped;
+  });
+
+  save();
+  log(`Auto clean complete: removed ${removedColumns} useless column(s) and ${removedRows} duplicate/blank row(s).`, 'ok');
+  render();
+};
+
+const exportCleanCsv = () => {
+  const analysis = buildAnalysis();
+  if (!analysis.cleanRows.length) {
+    log('No active clean rows to export.', 'warn');
+    return;
+  }
+
+  const csvRows = [analysis.headers, ...analysis.cleanRows.map(row => analysis.headers.map(header => row[header] ?? ''))];
+  const csv = csvRows
+    .map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'clean-analysis-data.csv';
+  link.click();
+  URL.revokeObjectURL(url);
+  log('Exported the active cleaned dataset as CSV.', 'ok');
+};
+
 const buildPromptInsights = (analysis, prompt) => {
   const lowerPrompt = normalize(prompt);
   const insights = [];
@@ -389,8 +470,10 @@ const renderDatasets = analysis => {
     return;
   }
 
+  const activeIds = new Set(activeDatasetIds);
   datasetsList.innerHTML = datasets
     .map(dataset => {
+      const isActive = activeIds.has(dataset.id);
       const previewRows = dataset.rows.slice(0, 3);
       const previewTable = previewRows.length
         ? `<table class="preview-table"><thead><tr>${dataset.headers
@@ -401,15 +484,19 @@ const renderDatasets = analysis => {
             .join('')}</tbody></table>`
         : '';
       return `
-        <article class="dataset-card">
+        <article class="dataset-card ${isActive ? 'active-dataset' : 'inactive-dataset'}">
           <div class="dataset-top">
             <div>
               <h3>${escapeHtml(dataset.name)}</h3>
               <p>Sheet: ${escapeHtml(dataset.sheet)} · ${formatNumber(dataset.rows.length)} rows · ${formatNumber(dataset.headers.length)} columns</p>
             </div>
-            <span class="badge">stored</span>
+            <span class="badge ${isActive ? 'active' : 'muted-badge'}">${isActive ? 'called into analysis' : 'stored only'}</span>
           </div>
           ${previewTable}
+          <div class="card-actions">
+            <button type="button" data-action="toggle-dataset" data-id="${escapeHtml(dataset.id)}">${isActive ? 'Hide from analysis' : 'Call data'}</button>
+            <button class="delete" type="button" data-action="delete-dataset" data-id="${escapeHtml(dataset.id)}">Delete useless file</button>
+          </div>
         </article>
       `;
     })
@@ -449,6 +536,9 @@ const renderColumns = analysis => {
             <span class="badge ${column.missing ? 'warning' : ''}">missing ${formatNumber(column.missing)}</span>
             <span class="badge">unique ${formatNumber(column.unique)}</span>
           </div>
+          <div class="card-actions">
+            <button class="delete" type="button" data-action="drop-column" data-column="${escapeHtml(column.header)}">Delete useless column</button>
+          </div>
         </article>
       `;
     })
@@ -479,7 +569,8 @@ uploadForm.addEventListener('submit', async event => {
     try {
       const parsedDatasets = await parseFile(file);
       datasets = [...parsedDatasets, ...datasets];
-      log(`Parsed ${file.name}: ${parsedDatasets.length} dataset(s) collected and stored.`, 'ok');
+      activeDatasetIds = [...parsedDatasets.map(dataset => dataset.id), ...activeDatasetIds];
+      log(`Parsed ${file.name}: ${parsedDatasets.length} dataset(s) collected, stored, and called into analysis.`, 'ok');
     } catch (error) {
       log(`${file.name}: ${error.message}`, 'error');
     }
@@ -493,6 +584,7 @@ uploadForm.addEventListener('submit', async event => {
 
 loadSampleButton.addEventListener('click', () => {
   datasets = sampleDatasets.map(dataset => ({ ...dataset, uploadedAt: new Date().toISOString() }));
+  activeDatasetIds = datasets.map(dataset => dataset.id);
   promptInput.value = 'Analyze revenue by region and product, identify missing data, and recommend what to clean before building a formal report.';
   save();
   log('Sample dataset loaded for quick preview.', 'ok');
@@ -501,11 +593,47 @@ loadSampleButton.addEventListener('click', () => {
 
 clearDataButton.addEventListener('click', () => {
   datasets = [];
+  activeDatasetIds = [];
   localStorage.removeItem(STORAGE_KEY);
   statusLog.innerHTML = '';
   log('Stored datasets cleared.', 'warn');
   render();
 });
+
+datasetsList.addEventListener('click', event => {
+  const button = event.target.closest('button[data-action]');
+  if (!button) return;
+  const { action, id } = button.dataset;
+
+  if (action === 'toggle-dataset') {
+    activeDatasetIds = activeDatasetIds.includes(id) ? activeDatasetIds.filter(activeId => activeId !== id) : [...activeDatasetIds, id];
+    save();
+    log(activeDatasetIds.includes(id) ? 'Stored data called into analysis.' : 'Stored data hidden from the current analysis.', 'ok');
+    render();
+  }
+
+  if (action === 'delete-dataset') {
+    datasets = datasets.filter(dataset => dataset.id !== id);
+    activeDatasetIds = activeDatasetIds.filter(activeId => activeId !== id);
+    save();
+    log('Deleted the selected stored dataset.', 'warn');
+    render();
+  }
+});
+
+columnsList.addEventListener('click', event => {
+  const button = event.target.closest('button[data-action="drop-column"]');
+  if (!button) return;
+  const header = button.dataset.column;
+  const activeIds = new Set(activeDatasetIds);
+  datasets = datasets.map(dataset => (activeIds.has(dataset.id) ? dropColumnFromDataset(dataset, header) : dataset));
+  save();
+  log(`Deleted column "${header}" from active stored data.`, 'warn');
+  render();
+});
+
+autoCleanButton.addEventListener('click', autoCleanDatasets);
+exportCsvButton.addEventListener('click', exportCleanCsv);
 
 searchInput.addEventListener('input', render);
 promptInput.addEventListener('input', render);

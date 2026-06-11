@@ -112,6 +112,8 @@
           <div class="form-actions">
             <button class="button" type="submit">Analyze uploaded data</button>
             <button class="button ghost" type="button" id="loadSample">Load sample data</button>
+            <button class="button ghost" type="button" id="autoClean">Auto clean useless data</button>
+            <button class="button secondary" type="button" id="exportCsv">Export clean CSV</button>
             <button class="button danger" type="button" id="clearData">Clear stored data</button>
           </div>
           <div id="statusLog" class="status-log" aria-live="polite"></div>
@@ -126,8 +128,25 @@
             <input id="search" class="search" type="search" placeholder="Search columns, files, values..." />
           </div>
 
+          <div class="agent-note">
+            <strong>Agent mode:</strong> The page currently uses deterministic cleaning and analysis rules. An AI agent is optional; it becomes useful when you want natural-language requests like “compare sales by region and explain risks” to choose columns, build charts, and write the final report automatically.
+          </div>
           <div id="analysisSummary" class="analysis-summary"></div>
+          <div class="library-heading">
+            <div>
+              <p class="eyebrow">Data storage / recall</p>
+              <h3>Stored datasets</h3>
+            </div>
+            <small>Use / hide datasets to call stored data into the current analysis.</small>
+          </div>
           <div id="datasetsList" class="datasets-list"></div>
+          <div class="library-heading">
+            <div>
+              <p class="eyebrow">Cleaned data model</p>
+              <h3>Available columns</h3>
+            </div>
+            <small>Remove useless columns before generating the final answer.</small>
+          </div>
           <div id="columnsList" class="reports-list"></div>
         </section>
       </section>

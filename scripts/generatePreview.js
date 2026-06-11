@@ -4,7 +4,7 @@ import { dirname, resolve } from 'path';
 const outputPath = resolve('docs/preview.svg');
 
 const columns = [
-  ['Revenue', 'numeric', 'Sum 526,500 · Avg 105,300 · Missing 1', '#dbeafe', '#1d4ed8'],
+  ['Revenue', 'numeric', 'Sum 526,500 · Avg 105,300 · cleaned', '#dbeafe', '#1d4ed8'],
   ['Region', 'text', 'Top values: NSW (3), VIC (2), QLD (1)', '#fef3c7', '#a16207'],
   ['Product', 'text', 'Top values: Software (3), Service (2)', '#fef3c7', '#a16207'],
 ];
@@ -67,8 +67,8 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" v
     <rect x="70" y="48" width="1060" height="202" rx="28" fill="#ffffff" fill-opacity="0.94" stroke="#e2e8f0" />
     <text x="112" y="100" class="eyebrow">Step-by-step data analysis workflow</text>
     <text x="112" y="166" class="hero-title">Excel Analytics Studio</text>
-    <text x="112" y="210" class="hero-copy">Upload multiple Excel/CSV files, clean rows, and generate summaries</text>
-    <text x="112" y="238" class="hero-copy">based on the analysis requirement you describe.</text>
+    <text x="112" y="210" class="hero-copy">Store, recall, clean, and analyze multiple Excel/CSV files</text>
+    <text x="112" y="238" class="hero-copy">then show results from the requirement you describe.</text>
     <rect x="874" y="116" width="126" height="46" rx="23" fill="#0f172a" />
     <text x="937" y="145" text-anchor="middle" font-family="Inter, Arial" font-size="15" font-weight="800" fill="#ffffff">Upload files</text>
     <rect x="1012" y="116" width="108" height="46" rx="23" fill="#0f766e" />
@@ -83,10 +83,10 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" v
     .join('')}
 
   ${[
-    ['FILES', '3', '#0f766e'],
+    ['ACTIVE FILES', '2/3', '#0f766e'],
     ['ROWS', '1,248', '#4f46e5'],
     ['COLUMNS', '18', '#d97706'],
-    ['QUALITY', '94%', '#059669'],
+    ['QUALITY', '96%', '#059669'],
   ]
     .map((stat, index) => {
       const x = 70 + index * 272;
@@ -99,7 +99,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" v
     <text x="100" y="594" class="eyebrow">Data collection</text>
     <text x="100" y="632" class="section-title">Upload files</text>
     <rect x="100" y="656" width="300" height="58" rx="16" fill="#f0fdfa" stroke="#99f6e4" stroke-dasharray="8 6" />
-    <text x="250" y="691" text-anchor="middle" class="field">Drop .xlsx / .csv files here</text>
+    <text x="250" y="691" text-anchor="middle" class="field">Upload · Store · Auto clean</text>
   </g>
 
   <g filter="url(#softShadow)">

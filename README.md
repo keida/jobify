@@ -27,6 +27,9 @@ The checked-in static page runs without rebuilding the React client and without 
 - Browser-side `.xlsx` parsing for standard worksheet values in modern Chromium-based browsers.
 - Local dataset storage with `localStorage`.
 - Data processing and deduplication.
+- Stored dataset recall: uploaded files are saved locally and can be called into or hidden from the current analysis.
+- Useless-data deletion: remove individual stored files, remove useless columns, or run auto-clean to delete empty/high-missing columns and duplicate/blank rows.
+- Clean-data export as CSV after the active datasets have been processed.
 - Missing-cell counts and quality score.
 - Numeric summaries: sum, average, min, max.
 - Text/category summaries: top values and unique counts.
@@ -39,6 +42,12 @@ npm run preview:screenshot
 ```
 
 This generates `docs/preview.svg`, a repo-local visual preview of the static dashboard that does not require Chromium, Playwright, or other browser dependencies.
+
+## Does this need an agent?
+
+Not for the first integrated workflow. The current repo version can collect files, store datasets, call selected datasets into analysis, delete useless data, process/clean rows, and generate rule-based summaries without an AI agent.
+
+An agent becomes useful in the final step when you want natural-language requirements to control the analysis, for example: “compare sales by region, remove irrelevant columns, explain anomalies, and produce an executive report.” In that phase, the agent should read the cleaned dataset schema, choose the right metrics/dimensions, build charts/tables, and write the final answer.
 
 ## Future phases
 

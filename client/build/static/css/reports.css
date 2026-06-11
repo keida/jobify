@@ -172,7 +172,7 @@ textarea { resize: vertical; }
 .analysis-summary {
   display: grid;
   gap: 14px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-bottom: 18px;
 }
 .summary-card,
@@ -238,3 +238,43 @@ textarea { resize: vertical; }
   .hero-panel,
   .panel { padding: 22px; }
 }
+
+.agent-note,
+.library-heading {
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  border-radius: 16px;
+  color: var(--teal-dark);
+  line-height: 1.6;
+  margin-bottom: 18px;
+  padding: 16px;
+}
+.library-heading {
+  align-items: center;
+  background: var(--slate-50);
+  border-color: var(--slate-200);
+  color: var(--slate-900);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.library-heading small { color: var(--slate-500); }
+.active-dataset { border-color: #5eead4; }
+.inactive-dataset { opacity: 0.72; }
+.badge.active { background: #ccfbf1; color: var(--teal-dark); }
+.badge.muted-badge { background: var(--slate-200); color: var(--slate-500); }
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.card-actions button {
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.55rem 0.8rem;
+}
+.card-actions button:not(.delete) { background: #ccfbf1; color: var(--teal-dark); }
+.card-actions .delete { background: #ffe4e6; color: #be123c; }
