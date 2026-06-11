@@ -13,7 +13,8 @@
     "server": "nodemon server --ignore client",
     "client": "npm start --prefix client",
     "start": "node server.js",
-    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
+    "preview:screenshot": "node scripts/generatePreview.js"
   },
   "keywords": [],
   "author": "",

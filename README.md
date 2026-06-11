@@ -19,6 +19,14 @@ Each report record includes:
 - Dashboard cards for draft, review, and published report counts.
 - Monthly report trend chart with bar/area chart toggle.
 
+## Preview artifact
+
+```bash
+npm run preview:screenshot
+```
+
+This generates `docs/preview.svg`, a repo-local visual preview of the static dashboard that does not require Chromium, Playwright, or other browser dependencies.
+
 ## Development
 
 ```bash
