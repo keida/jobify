@@ -4,110 +4,131 @@
     <meta charset="utf-8" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#2563eb" />
+    <meta name="theme-color" content="#0f766e" />
     <meta
       name="description"
-      content="Insight Reports Dashboard - create and track data reports from this repo without installing the React client."
+      content="Excel Analytics Studio - upload multiple Excel or CSV files, clean data, and generate dashboard-ready analysis reports from this repo."
     />
     <link rel="apple-touch-icon" href="/logo192.png" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="stylesheet" href="/static/css/reports.css" />
-    <title>Insight Reports Dashboard</title>
+    <title>Excel Analytics Studio</title>
   </head>
   <body>
     <main class="app-shell">
       <section class="hero-panel">
         <div>
-          <p class="eyebrow">Repo runnable demo</p>
-          <h1>Insight Reports Dashboard</h1>
+          <p class="eyebrow">Step-by-step data analysis workflow</p>
+          <h1>Excel Analytics Studio</h1>
           <p class="hero-copy">
-            Create the data reports your team needs, move them through draft, review, and published stages,
-            and see the dashboard update instantly. This static demo runs directly from Express and stores
-            sample data in your browser.
+            Upload multiple Excel or CSV files, collect and store the datasets in your browser, process and clean the rows,
+            then generate analysis summaries based on the questions you describe. This repo-runnable version is the first
+            working page for the larger data-report product.
           </p>
         </div>
         <div class="hero-actions">
-          <a class="button secondary" href="#reports">View reports</a>
-          <a class="button" href="#create-report">Create report</a>
+          <a class="button secondary" href="#upload">Upload files</a>
+          <a class="button" href="#analysis">View analysis</a>
         </div>
       </section>
 
-      <section class="stats-grid" aria-label="Report status summary">
-        <article class="stat-card draft-card">
-          <span>Draft</span>
-          <strong id="draftCount">0</strong>
-          <small>Reports being shaped</small>
+      <section class="pipeline" aria-label="Data analysis pipeline">
+        <article class="pipeline-step active">
+          <span>01</span>
+          <strong>数据收集</strong>
+          <small>Upload multiple Excel/CSV files</small>
         </article>
-        <article class="stat-card review-card">
-          <span>In review</span>
-          <strong id="reviewCount">0</strong>
-          <small>Reports awaiting sign-off</small>
+        <article class="pipeline-step">
+          <span>02</span>
+          <strong>数据存储</strong>
+          <small>Save parsed datasets locally</small>
         </article>
-        <article class="stat-card published-card">
-          <span>Published</span>
-          <strong id="publishedCount">0</strong>
-          <small>Reports ready for teams</small>
+        <article class="pipeline-step">
+          <span>03</span>
+          <strong>数据处理</strong>
+          <small>Merge rows and infer columns</small>
         </article>
-        <article class="stat-card total-card">
-          <span>Total</span>
-          <strong id="totalCount">0</strong>
-          <small>Tracked reports</small>
+        <article class="pipeline-step">
+          <span>04</span>
+          <strong>数据清洗</strong>
+          <small>Trim blanks, missing values, duplicates</small>
+        </article>
+        <article class="pipeline-step">
+          <span>05</span>
+          <strong>数据分析</strong>
+          <small>Metrics, categories, recommendations</small>
         </article>
       </section>
 
-      <section class="workspace" id="create-report">
-        <form id="reportForm" class="panel form-panel">
+      <section class="stats-grid" aria-label="Dataset summary">
+        <article class="stat-card files-card">
+          <span>Files</span>
+          <strong id="fileCount">0</strong>
+          <small>Uploaded workbooks / CSVs</small>
+        </article>
+        <article class="stat-card rows-card">
+          <span>Rows</span>
+          <strong id="rowCount">0</strong>
+          <small>Clean data rows</small>
+        </article>
+        <article class="stat-card columns-card">
+          <span>Columns</span>
+          <strong id="columnCount">0</strong>
+          <small>Detected fields</small>
+        </article>
+        <article class="stat-card quality-card">
+          <span>Quality</span>
+          <strong id="qualityScore">0%</strong>
+          <small>Completeness score</small>
+        </article>
+      </section>
+
+      <section class="workspace" id="upload">
+        <form id="uploadForm" class="panel upload-panel">
           <div class="section-heading">
-            <p class="eyebrow">Create / update</p>
-            <h2 id="formTitle">Create report</h2>
+            <p class="eyebrow">Data collection</p>
+            <h2>Upload multiple files</h2>
+            <p>
+              Select one or more <strong>.xlsx</strong>, <strong>.csv</strong>, or <strong>.tsv</strong> files. The demo parses
+              them in the browser and stores the result in localStorage so it can run inside the repo without a database.
+            </p>
           </div>
-          <input type="hidden" id="reportId" />
-          <label>
-            Report title
-            <input id="title" type="text" placeholder="Weekly revenue dashboard" required />
+
+          <label class="file-drop" for="fileInput">
+            <input id="fileInput" type="file" multiple accept=".xlsx,.csv,.tsv,.txt" />
+            <span>Drop files here or click to browse</span>
+            <small>Use CSV/TSV for the most reliable offline parsing; XLSX works for standard worksheet values.</small>
           </label>
+
           <label>
-            Data source
-            <input id="source" type="text" placeholder="CRM, warehouse, ads platform..." required />
+            Analysis requirement
+            <textarea
+              id="analysisPrompt"
+              rows="5"
+              placeholder="Example: Analyze monthly sales by region, find missing data, top products, unusual values, and summary recommendations."
+            ></textarea>
           </label>
-          <label>
-            Audience
-            <input id="audience" type="text" placeholder="Executive team" required />
-          </label>
-          <div class="form-row">
-            <label>
-              Category
-              <select id="category">
-                <option>sales</option>
-                <option>marketing</option>
-                <option>finance</option>
-                <option>operations</option>
-              </select>
-            </label>
-            <label>
-              Status
-              <select id="status">
-                <option>draft</option>
-                <option>review</option>
-                <option>published</option>
-              </select>
-            </label>
-          </div>
+
           <div class="form-actions">
-            <button class="button" type="submit">Save report</button>
-            <button class="button ghost" type="button" id="resetForm">Clear</button>
+            <button class="button" type="submit">Analyze uploaded data</button>
+            <button class="button ghost" type="button" id="loadSample">Load sample data</button>
+            <button class="button danger" type="button" id="clearData">Clear stored data</button>
           </div>
+          <div id="statusLog" class="status-log" aria-live="polite"></div>
         </form>
 
-        <section class="panel reports-panel" id="reports">
+        <section class="panel analysis-panel" id="analysis">
           <div class="section-heading reports-heading">
             <div>
-              <p class="eyebrow">Report library</p>
-              <h2>All reports</h2>
+              <p class="eyebrow">Data analysis</p>
+              <h2>Generated dashboard</h2>
             </div>
-            <input id="search" class="search" type="search" placeholder="Search by title, source, audience..." />
+            <input id="search" class="search" type="search" placeholder="Search columns, files, values..." />
           </div>
-          <div id="reportsList" class="reports-list" aria-live="polite"></div>
+
+          <div id="analysisSummary" class="analysis-summary"></div>
+          <div id="datasetsList" class="datasets-list"></div>
+          <div id="columnsList" class="reports-list"></div>
         </section>
       </section>
     </main>
